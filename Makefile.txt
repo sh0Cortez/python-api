@@ -99,8 +99,6 @@ testdeployment:
 clean:
 	rm -vf lambda.zip
 
-all:
-	pip install -U pip
-	pip install --requirement requirements.txt	
+all:requirements
 	
 .PHONY: test build deploy all clean
