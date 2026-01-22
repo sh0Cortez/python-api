@@ -99,44 +99,8 @@ testdeployment:
 clean:
 	rm -vf lambda.zip
 
-all: 
+all:
 	pip install -U pip
 	pip install --requirement requirements.txt	
-	rm -vf lambda.zip
-	pylint --exit-zero --errors-only --disable=C0301 --disable=C0326 --disable=R,C $(CODE)
-	flake8 --exit-zero --ignore=E501,E231 $(CODE)
-	black --diff $(CODE)
-	isort --check-only --diff $(CODE)
-	python -m unittest -v index_test
-	zip lambda.zip index.py data.json template.html
-	@echo
-	aws sts get-caller-identity
-
-	@echo
-	aws lambda wait function-active \
-		--region=$(REGION) \
-		--function-name="$(FUNCTION)"
-
-	@echo
-	aws lambda update-function-configuration \
-		--region=$(REGION) \
-		--function-name="$(FUNCTION)" \
-		--environment "Variables={BUILD_TAG=$(BUILD_TAG),VERSION=$(VERSION),BUILD_NUMBER=$(BUILD_NUMBER),ENVIRONMENT=$(ENVIRONMENT)}"
-
-	@echo
-	aws lambda wait function-updated \
-		--region=$(REGION) \
-		--function-name="$(FUNCTION)"
-
-	@echo
-	aws lambda update-function-code \
-		--region=$(REGION) \
-		--function-name="$(FUNCTION)" \
-	 	--zip-file=fileb://lambda.zip
-
-	@echo
-	aws lambda wait function-updated \
-		--region=$(REGION) \
-		--function-name="$(FUNCTION)"
 	
 .PHONY: test build deploy all clean
